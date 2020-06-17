@@ -31,6 +31,8 @@ if (FABRIK_BUILD_TESTS)
     # Test code
     add_fabrik_test(test_world world/world.cpp)
     add_fabrik_test(test_robot_model robot_model/robot_model.cpp)
+    add_fabrik_test(test_robot_state robot_state/robot_state.cpp)
+    add_fabrik_test(test_math math/math.cpp)
     
 endif()
 
