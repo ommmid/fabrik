@@ -40,10 +40,7 @@ public:
      */
     RobotState(const std::vector<robot_model::Link>& chain, const Eigen::Affine3d& base);
 
-    /** \brief Construct a state at a forward-completed home configuratn means:
-     * reaching_at_ = dof + 1
-     * reachin_direction_ = FORWARD
-     * joint_values = set to zeros
+    /** \brief Not sure if I need to create any other constructor
      */
     RobotState(const std::vector<robot_model::Link>& chain,
                const Eigen::Affine3d& base,
@@ -56,6 +53,7 @@ public:
      * calculate a full forward kinematics to reach to the end-effector. It is being disassembled
      * Joint number and linke number are the same. J1 is on s1. s1 and e1 are both on link 1
      * and they start from 0 to n-1, n being the number of degrees of freedom
+     * It also updates the joints values first
      */ 
     void updateFrame(const double& joint_value, const int& joint_number);
 
@@ -72,6 +70,11 @@ public:
     ReachingDirection getReachingDirection() const
     {
         return reaching_direction_;
+    }
+
+    void setReachingDirection(ReachingDirection& reaching_direction)
+    {
+        reaching_direction_ = reaching_direction;
     }
 
     const std::vector<double> getJointsValues() const
