@@ -9,7 +9,6 @@
 
 #include "fabrik/base/fabrik.h"
 
-
 namespace fabrik
 {
 
@@ -18,41 +17,47 @@ FABRIK::FABRIK(robot_state::RobotStatePtr& robot_state,
            std::vector<double>& initial_configuration,
            Eigen::Affine3d& target,
            double threshold,
-           double requested_iteration_num):
+           double requested_iteration_num,
+           CalculatorType calculator_type):
 robot_state_(robot_state), initial_configuration_(initial_configuration), 
 target_(target), threshold_(threshold), requested_iteration_num_(requested_iteration_num)
 {
     // set the state of the robot to the given initial_configuration
+
+    // set the calculator 
+    calculator_ = createCalculator(calculator_type);
 }
 
-double FABRIK::calcError(const SolverType& solver_type, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target)
+CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
 {
-    switch (solver_type)
+    switch (calculator_type)
     {
-        case SolverType::POSITION:
-            return FABRIK::calcError(ErrorCalculator::shortestDistance, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
+        case CalculatorType::POSITION:
+            CalculatorPtr out(new PositionBasedCalculator())
+            return out;
             break;
-        case SolverType::ORIENTATION:
-            return FABRIK::calcError(ErrorCalculator::nearestOrientation, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
+        case CalculatorType::ORIENTATION:
+            CalculatorPtr out(new OrientationBasedCalculator())
+            return out;
             break;
-        case SolverType::COMBINATION:
-            return FABRIK::calcError(ErrorCalculator::combo, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
+        case CalculatorType::COMBINATION:
+            CalculatorPtr out(new ComboCalculator())
+            return out;
             break;
     }
 }
 
-double FABRIK::calcError(double(*calculator)(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target))
-{
-    return calculator(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target));
-}
+// double FABRIK::calcError(double(*calculator)(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target))
+// {
+//     return calculator(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target));
+// }
 
-bool FABRIK::solve(const SolverType& solver_type, Output& output)
+bool FABRIK::solve(Output& output)
 {
    
-
-// e_{n-1}_w is the end_effector
+// e_{n-1}_w is the end_effector, the end frame of the last link
 Eigen::Affine3d& end_effector = robot_state_->getChain().back();
-double err = calcError(solver_type, end_effector, target); // based on solver type varies ????
+double error = calculator_->calculateError(end_effector, target); // based on solver type varies ????
 
 int iteration_num = 0;
 while (err > threshold_ || (iteration_num == requested_iteration_num_))

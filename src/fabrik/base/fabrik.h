@@ -9,11 +9,20 @@
 
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/util/class_forward.h"
+#include "fabrik/base/calculator.h"
 
 namespace fabrik
 {  
 
 FABRIK_CLASS_FORWARD(FABRIK);
+
+enum CalculatorType
+{
+    POSITION,
+    ORIENTATION,
+    COMBINATION
+}
+
 
 /** \brief This class includes the problem input, output and the solver
  */
@@ -54,8 +63,12 @@ struct Output
 
 Output output_;
 
-double calcError(const SolverType& solver_type, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
-double calcError(int(*calculator_type)(int), const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
+CalculatorPtr calculator_;
+
+CalculatorPtr createCalculator(const CalculatorType& calculator_type);
+
+// double calcError(const SolverType& solver_type, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
+// double calcError(int(*calculator_type)(int), const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
 
 void backwardReaching();
 
@@ -63,33 +76,6 @@ void forwardReaching();
 
 };
 
-enum SolverType
-{
-    POSITION,
-    ORIENTATION,
-    COMBINATION
-}
-
-
-class ErrorCalculator
-{
-    double shortestDistance(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
-
-    double closestOrientation(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
-
-    double combo(const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
-
-}
-
-class Solver
-{
-    shortestDistance(const Eigen::Affine3d& reaching_frame, const Eigen::Affine3d& aimed_frame);
-
-    closestOrientation(const Eigen::Affine3d& reaching_frame, const Eigen::Affine3d& aimed_frame);
-
-    combo(const Eigen::Affine3d& reaching_frame, const Eigen::Affine3d& aimed_frame);
-
-}
 
 
 }
