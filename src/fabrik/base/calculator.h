@@ -23,11 +23,13 @@ public:
     /** \brief Construct a Calculator object */
     Calculator();
     
-    /** \brief Calculate the error between the current pose of end-effector and the target*/
-    virtual bool calculateError(Output& output) = 0;
+    /** \brief Calculate the error between two affine3d frames */
+    virtual double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) = 0;
 
     /** \brief Calculates the transformation of the reaching frame based on some criteria  */
-    virtual bool calculateReach(Output& output) = 0;
+    virtual bool calculateReach(const Eigen::Affine3d& start_frame_reaching, 
+                                const Eigen::Affine3d& end_frame_reaching, 
+                                const Eigen::Affine3d& frame_aimed_at) = 0;
 
 protected:
 
@@ -41,9 +43,11 @@ class PositionBasedCalculator : Calculator
 public:
     PositionBasedCalculator();
 
-    double calculateError(Output& output) override;
+    double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) override;
 
-    bool calculateReach(Output& output) override;
+    double calculateReach(const Eigen::Affine3d& start_frame_reaching,
+                          const Eigen::Affine3d& end_frame_reaching,
+                          const Eigen::Affine3d& frame_aimed_at) override;
 
 private:
 

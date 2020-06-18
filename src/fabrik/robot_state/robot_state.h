@@ -55,7 +55,7 @@ public:
      * and they start from 0 to n-1, n being the number of degrees of freedom
      * It also updates the joints values first
      */ 
-    void updateFrame(const double& joint_value, const int& joint_number);
+    void updateState(const double& joint_value, const int& joint_number);
 
     int getReachingAt() const
     {

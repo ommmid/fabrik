@@ -32,14 +32,14 @@ chain_(chain), base_(base)
     {
         joints_values_[i] = 0;
         // frames number start from 1 not 0
-        updateFrame(joints_values_[i], i );
+        updateState(joints_values_[i], i );
     }
     std::cout << "3 ... " << std::endl;
 }
 
-void RobotState::updateFrame(const double& joint_value, const int& joint_number)
+void RobotState::updateState(const double& joint_value, const int& joint_number)
 {
-    std::cout << "updateFrame ... " << std::endl;
+    std::cout << "updateState ... " << std::endl;
     std::cout << "reaching direction: " << reaching_direction_ << std::endl;
 
     // update s_i and e_i
@@ -72,7 +72,7 @@ void RobotState::updateFrame(const double& joint_value, const int& joint_number)
             // e_{i-1} = s_i * inv(rotation_z(theta)) = s_i * rotation_z(-theta)
             // joint_value is already in the opposite direction of the joint so we do not have to negate it.
             frames_[joint_number - 1].second = start_i * fabrik::rotation_z(joint_value);
-            // e_i = s_i * relative transformation of link_i
+            // e_i = s_i * inverse (relative transformation of link_i)
             frames_[joint_number - 1].first = frames_[joint_number - 1].second * chain_[joint_number].getLinkFrame().inverse();
         }
     }
