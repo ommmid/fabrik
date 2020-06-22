@@ -21,13 +21,13 @@ class Calculator
 {
 public:
     /** \brief Construct a Calculator object */
-    Calculator();
+    // Calculator();
     
     /** \brief Calculate the error between two affine3d frames */
     virtual double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) = 0;
 
     /** \brief Calculates the transformation of the reaching frame based on some criteria  */
-    virtual bool calculateReach(const Eigen::Affine3d& start_frame_reaching, 
+    virtual double calculateReach(const Eigen::Affine3d& start_frame_reaching, 
                                 const Eigen::Affine3d& end_frame_reaching, 
                                 const Eigen::Affine3d& frame_aimed_at) = 0;
 
@@ -36,9 +36,9 @@ protected:
     double error_;
 
 
-}
+};
 
-class PositionBasedCalculator : Calculator
+class PositionBasedCalculator : public Calculator
 {
 public:
     PositionBasedCalculator();
@@ -51,25 +51,30 @@ public:
 
 private:
 
-}
+};
 
-// class OrientationBasedCalculator : Calculator
-// {
-// public:
-//     OrientationBasedCalculator();
+class OrientationBasedCalculator : public Calculator
+{
+public:
+    OrientationBasedCalculator();
 
-//     calculateError() override;
+    double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) override;
 
-//     calculateReach() override;
-// }
+    double calculateReach(const Eigen::Affine3d& start_frame_reaching,
+                          const Eigen::Affine3d& end_frame_reaching,
+                          const Eigen::Affine3d& frame_aimed_at) override;
+};
 
-// class ComboCalculator : Calculator
-// {
-//     ComboCalculator();
+class ComboCalculator : public Calculator
+{
+public:
+    ComboCalculator();
 
-//     calculateError() override;
+    double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) override;
 
-//     calculateReach() override;
-// }
+    double calculateReach(const Eigen::Affine3d& start_frame_reaching,
+                          const Eigen::Affine3d& end_frame_reaching,
+                          const Eigen::Affine3d& frame_aimed_at) override;
+};
 
 }

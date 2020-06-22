@@ -8,6 +8,7 @@
 #include "fabrik/util/math.h"
 
 #include "fabrik/base/fabrik.h"
+#include "fabrik/base/calculator.h"
 
 namespace fabrik
 {
@@ -25,7 +26,7 @@ target_(target), threshold_(threshold), requested_iteration_num_(requested_itera
     // set the state of the robot to the given initial_configuration
 
     // set the calculator 
-    calculator_ = createCalculator(calculator_type);
+    calculator_ = FABRIK::createCalculator(calculator_type);
 }
 
 CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
@@ -33,27 +34,24 @@ CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
     switch (calculator_type)
     {
         case CalculatorType::POSITION:
-            CalculatorPtr calculator(new PositionBasedCalculator())
-            return calculator;
+            return CalculatorPtr(new PositionBasedCalculator());
             break;
         case CalculatorType::ORIENTATION:
-            CalculatorPtr calculator(new OrientationBasedCalculator())
-            return calculator;
+            return CalculatorPtr(new OrientationBasedCalculator());
             break;
         case CalculatorType::COMBINATION:
-            CalculatorPtr calculator(new ComboCalculator())
-            return calculator;
+            return CalculatorPtr(new ComboCalculator());
             break;
     }
 }
 
 
-bool FABRIK::solve(Output& output)
+bool FABRIK::solve(FabrikOutput& output)
 {
    
 // e_{n-1}_w is the end_effector, the end frame of the last link
-Eigen::Affine3d& end_effector = robot_state_->getChain().back();
-double target_ee_error = calculator_->calculateError(end_effector, target); 
+const Eigen::Affine3d& end_effector = robot_state_->getChain().back().getLinkFrame();
+double target_ee_error = calculator_->calculateError(end_effector, target_); 
 
 int iteration_num = 0;
 while (target_ee_error > threshold_ || (iteration_num == requested_iteration_num_))
@@ -66,35 +64,34 @@ while (target_ee_error > threshold_ || (iteration_num == requested_iteration_num
     // do one forward reaching
     FABRIK::forwardReaching();
 
-    target_ee_error = calculator_->calculateError(end_effector, target); 
+    target_ee_error = calculator_->calculateError(end_effector, target_); 
 }
 
-output_.final_iteration_num_ = iteration_num;
-output_.joints_values_ = ;
-output_.error = ;
+output.final_iteration_num_ = iteration_num;
+// output_.joints_values_ = ;
+// output_.error = ;
 
+return true;
 }
 
-FABRIK::backwardReaching()
+void FABRIK::backwardReaching()
 {
     robot_state_->setReachingDirection(robot_state::ReachingDirection::BACKWARD);
+    // set the last frame in frames_ to the target
+    robot_state_->updateState(target_);
 
-    int dof = robot_state_->getDOF();
-    frames_[dof - 1].second = target_;
-    // s_i = e_i * inverse(relative transformation of link_i)
-    frames_[dof - 1].first = target_ * chain_[dof - 1].getLinkFrame().inverse();
-
+    int dof = robot_state_->getDOF();   
     // J_0 is not calculated in backward reaching, that is why we loop through
     // J_(dof-1) ... J_1
     for(int joint_number = dof - 1; joint_number > 0; --joint_number)
     {
         // Example: dof = 6. to claculate J_5, we need e4, s4 and e3
-        Eigen::Affine3d e_i_previous = frames_[joint_number - 1].second;
-        Eigen::Affine3d s_i_previous = frames_[joint_number - 1].first;
+        Eigen::Affine3d e_i_previous = robot_state_->getFrames(joint_number - 1).second;
+        Eigen::Affine3d s_i_previous = robot_state_->getFrames(joint_number - 1).first;
         Eigen::Affine3d e_i_previous_previous;
         if (joint_number != 1)
         {
-            e_i_previous_previous = frames_[joint_number - 2].second;
+            e_i_previous_previous = robot_state_->getFrames(joint_number - 2).second;
         }else
         {
             e_i_previous_previous = robot_state_->getBase();
@@ -109,15 +106,15 @@ FABRIK::backwardReaching()
     }
 }
 
-FABRIK::forwardReaching()
+void FABRIK::forwardReaching()
 {
-    robot_state_->setReachingDirection(robot_state::ReachingDirection::FORWARD);
+    // robot_state_->setReachingDirection(robot_state::ReachingDirection::FORWARD);
 
-    for(int joint_number = 0; joint_number < dof ; ++joint_number)
-    {
-        double joint_value = caclulateJointValue(); // based on solve type varies ????
-        robot_state_->updateState(joint_value, joint_number);
-    }
+    // for(int joint_number = 0; joint_number < dof ; ++joint_number)
+    // {
+    //     double joint_value = caclulateJointValue(); // based on solve type varies ????
+    //     robot_state_->updateState(joint_value, joint_number);
+    // }
 }
 
 

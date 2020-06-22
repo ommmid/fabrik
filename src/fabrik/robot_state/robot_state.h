@@ -16,9 +16,7 @@ namespace robot_state
 enum ReachingDirection
 {
     FORWARD,
-    FORWARD_COMPLETED,
-    BACKWARD,
-    BACKWARD_COMPLETED
+    BACKWARD
 };
 
 
@@ -47,7 +45,7 @@ public:
                const ReachingDirection& reaching_direction);
 
 
-    /** \brief This function updates only [s_i e_i]. We do not change the rest of the 
+    /** \brief This function updates only [s_i e_i] in frames_. We do not change the rest of the 
      * frames start_{i+1} and end_{i+1} ... because this function is used in
      * either forward or backward reaching, meaning it does not
      * calculate a full forward kinematics to reach to the end-effector. It is being disassembled
@@ -56,6 +54,11 @@ public:
      * It also updates the joints values first
      */ 
     void updateState(const double& joint_value, const int& joint_number);
+
+    /** \brief Update the last frame in frames_ at the first step of reching back. No joint value is
+     * needed. The only thing we need is the transformation of the last link
+     */
+    void updateState(Eigen::Affine3d target);
 
     int getReachingAt() const
     {
@@ -70,11 +73,6 @@ public:
     ReachingDirection getReachingDirection() const
     {
         return reaching_direction_;
-    }
-
-    void setReachingDirection(ReachingDirection& reaching_direction)
-    {
-        reaching_direction_ = reaching_direction;
     }
 
     const std::vector<double> getJointsValues() const
@@ -92,14 +90,30 @@ public:
         return frames_;
     } 
 
+    const std::pair<Eigen::Affine3d, Eigen::Affine3d> getFrames(int link_index) const
+    {
+        return frames_[link_index];
+    } 
+
     const Eigen::Affine3d getBase() const
     {
         return base_;
     } 
 
+    void setReachingDirection(ReachingDirection reaching_direction)
+    {
+        reaching_direction_ = reaching_direction;
+    }
+
+    void setReachingAt(int reaching_at)
+    {
+        reaching_at_ = reaching_at;
+    }
+
 private:
     /** \brief An integer showing the link number trying to reach.
-     * If this number is at dof, then it means the robot is at forward complete configuration
+     * ForwardReaching:  0, 1, ... , (dof - 1)
+     * BackwardReaching: 
      */
     int reaching_at_;
 

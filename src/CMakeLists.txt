@@ -1,4 +1,5 @@
 add_subdirectory(fabrik)
+
 install(
     DIRECTORY fabrik/ 
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/fabrik"

@@ -37,6 +37,13 @@ chain_(chain), base_(base)
     std::cout << "3 ... " << std::endl;
 }
 
+void RobotState::updateState(Eigen::Affine3d target)
+{
+    frames_[dof_ - 1].second = target;
+    // s_i = e_i * inverse(relative transformation of link_i)
+    frames_[dof_ - 1].first = target * chain_[dof_ - 1].getLinkFrame().inverse();
+}
+
 void RobotState::updateState(const double& joint_value, const int& joint_number)
 {
     std::cout << "updateState ... " << std::endl;
@@ -61,20 +68,18 @@ void RobotState::updateState(const double& joint_value, const int& joint_number)
         {
             fabrik::Exception("joint number 0 can not be updated in backward reaching");
         }
-        else
-        {
-            // We assume the joint value found by the solve process is going to locate 
-            // e_{i-1} with respect to s_i which is in the opposite direction of the joint 
-            joints_values_[joint_number] = -joint_value;
 
-            Eigen::Affine3d start_i = frames_[joint_number].first;
+        // We assume the joint value found by the solve process is going to locate 
+        // e_{i-1} with respect to s_i which is in the opposite direction of the joint 
+        joints_values_[joint_number] = -joint_value;
 
-            // e_{i-1} = s_i * inv(rotation_z(theta)) = s_i * rotation_z(-theta)
-            // joint_value is already in the opposite direction of the joint so we do not have to negate it.
-            frames_[joint_number - 1].second = start_i * fabrik::rotation_z(joint_value);
-            // e_i = s_i * inverse (relative transformation of link_i)
-            frames_[joint_number - 1].first = frames_[joint_number - 1].second * chain_[joint_number].getLinkFrame().inverse();
-        }
+        Eigen::Affine3d start_i = frames_[joint_number].first;
+
+        // e_{i-1} = s_i * inv(rotation_z(theta)) = s_i * rotation_z(-theta)
+        // joint_value is already in the opposite direction of the joint so we do not have to negate it.
+        frames_[joint_number - 1].second = start_i * fabrik::rotation_z(joint_value);
+        // e_i = s_i * inverse (relative transformation of link_i)
+        frames_[joint_number - 1].first = frames_[joint_number - 1].second * chain_[joint_number].getLinkFrame().inverse();
     }
 }
             

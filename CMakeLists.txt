@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(fabrik VERSION 0.1.0)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+
+# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# message([WARNING] ${CMAKE_INSTALL_LIBDIR})
+# set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+
 # do the include_dirs here
 
 # ${CMAKE_CURRENT_SOURCE_DIR} is the address of where this CMakeLists.txt
@@ -15,7 +26,6 @@ add_subdirectory(tests)
 
 
 
-# how to cout message in boost unit test
 
 
 

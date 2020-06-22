@@ -15,14 +15,10 @@ Eigen::Affine3d rotation_z(const double& theta);
 
 double random_double(const double& start, const double& end);
 
-// template <typename T>
-// T make_unit_vector(const T& vector)
-// {
-//      = vector(0) * vector(0) + vector(1) * vector(1) + vector(2) * vector(2);
-// }
-
 void make_unit_vector3d(Eigen::Vector3d& vector);
 
+/** \brief Find the angle between two arbitrary vectors */
+double angleBetweenTwoVectors(Eigen::Vector3d& v1, Eigen::Vector3d& v2);
 
 }
 

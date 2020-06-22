@@ -7,7 +7,7 @@
 #include "fabrik/util/exception.h"
 #include "fabrik/util/math.h"
 
-#include "fabrik/base/fabrik.h"
+#include "fabrik/base/calculator.h"
 
 
 namespace fabrik
@@ -37,9 +37,10 @@ double PositionBasedCalculator::calculateReach(const Eigen::Affine3d& start_fram
     Eigen::Vector3d j_plane_normal(start_frame_reaching.rotation()(0,2),
                                     start_frame_reaching.rotation()(1,2),
                                     start_frame_reaching.rotation()(2,2));
-    Eigen::Vector3d j_origin(start_frame_reaching.translation);                                    
+    Eigen::Vector3d j_origin(start_frame_reaching.translation());                                    
     Eigen::Hyperplane<double, 3> j_plane(j_plane_normal, j_origin);
 
+    // project a point on a plane. The plane is passing through the origin of the point.
     // project start_to_aim on joint plane
     Eigen::Vector3d start_to_aim_projected = j_plane.projection(start_to_aim);
 
@@ -49,23 +50,53 @@ double PositionBasedCalculator::calculateReach(const Eigen::Affine3d& start_fram
     // find the angle between start_to_end and start_to_aim_projected
     double angle = angleBetweenTwoVectors(start_to_end, start_to_aim_projected);
 
-    // what happens to joint angle now ???
-
-    return ;
+    // what is the joint angle after calculating the angle between two vectors ???
+    return angle * 10; // correct it
 }
 
 
-// project a point on a plane. The plane is passing through the origin of the point.
-inline double angleBetweenTwoVectors(const Eigen::Vector3d& v1, const Eigen::Vector3d& v2)
+OrientationBasedCalculator::OrientationBasedCalculator()
 {
-    v1.normalize();
-    v2.normalize();
 
-   // check if the angle is the smaller not the larger ???
-    double angle = std::acos(v1.dot(v2));
-
-    return projectedPoint;
 }
+
+double OrientationBasedCalculator::calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2)
+{
+    
+    return 0;
+}
+
+double OrientationBasedCalculator::calculateReach(const Eigen::Affine3d& start_frame_reaching,
+                          const Eigen::Affine3d& end_frame_reaching,
+                          const Eigen::Affine3d& frame_aimed_at)
+{
+    
+    // what is the joint angle after calculating the angle between two vectors ???
+    return  10; // correct it
+}
+
+
+ComboCalculator::ComboCalculator()
+{
+
+}
+
+
+double ComboCalculator::calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2)
+{
+    
+    return 0;
+}
+
+double ComboCalculator::calculateReach(const Eigen::Affine3d& start_frame_reaching,
+                          const Eigen::Affine3d& end_frame_reaching,
+                          const Eigen::Affine3d& frame_aimed_at)
+{
+    
+    // what is the joint angle after calculating the angle between two vectors ???
+    return  10; // correct it
+}
+
 
 
 }
