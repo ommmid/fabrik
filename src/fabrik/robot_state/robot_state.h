@@ -32,17 +32,17 @@ class RobotState
 {
 public:
     /** \brief Construct a state at a forward-completed home configuratn means:
-     * reaching_at_ = dof
+     * reached_at_ = dof
      * reachin_direction_ = FORWARD
      * joint_values = set to zeros
      */
     RobotState(const std::vector<robot_model::Link>& chain, const Eigen::Affine3d& base);
 
-    /** \brief Not sure if I need to create any other constructor
-     */
-    RobotState(const std::vector<robot_model::Link>& chain,
-               const Eigen::Affine3d& base,
-               const ReachingDirection& reaching_direction);
+    // /** \brief Not sure if I need to create any other constructor
+    //  */
+    // RobotState(const std::vector<robot_model::Link>& chain,
+    //            const Eigen::Affine3d& base,
+    //            const ReachingDirection& reaching_direction);
 
 
     /** \brief This function updates only [s_i e_i] in frames_. We do not change the rest of the 
@@ -55,14 +55,14 @@ public:
      */ 
     void updateState(const double& joint_value, const int& joint_number);
 
-    /** \brief Update the last frame in frames_ at the first step of reching back. No joint value is
-     * needed. The only thing we need is the transformation of the last link
+    /** \brief Update the last frame in frames_ at the first step of reching backward. 
+     * No joint value is needed. The only thing we need is the transformation of the last link
      */
     void updateState(Eigen::Affine3d target);
 
-    int getReachingAt() const
+    int getReachedAt() const
     {
-        return reaching_at_;
+        return reached_at_;
     }
 
     int getDOF() const
@@ -80,9 +80,19 @@ public:
         return joints_values_;
     }
 
+    const double getJointsValues(int index) const
+    {
+        return joints_values_[index];
+    }
+
     const std::vector<robot_model::Link> getChain() const
     {
         return chain_;
+    }
+
+    const robot_model::Link getLink(int index) const
+    {
+        return chain_[index];
     }
 
     const std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>> getFrames() const
@@ -107,15 +117,16 @@ public:
 
     void setReachingAt(int reaching_at)
     {
-        reaching_at_ = reaching_at;
+        reached_at_ = reaching_at;
     }
 
+    void printState(std::string name) const;
+
 private:
-    /** \brief An integer showing the link number trying to reach.
-     * ForwardReaching:  0, 1, ... , (dof - 1)
-     * BackwardReaching: 
+    /** \brief An integer showing the link number where the link start and end frame are updated
+     * the link is at "reached" state
      */
-    int reaching_at_;
+    int reached_at_;
 
     /** \brief Reaching direction: forward or backward  */
     ReachingDirection reaching_direction_;
@@ -146,6 +157,7 @@ private:
      */
     Eigen::Affine3d base_;
     // do I need the target in the state too ???
+
 };
 
 

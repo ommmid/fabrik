@@ -45,6 +45,7 @@ public:
 
     double calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2) override;
 
+    /** \brief Finds the angle to go FROM start_to_end_projected TO start_to_aim_projected */
     double calculateReach(const Eigen::Affine3d& start_frame_reaching,
                           const Eigen::Affine3d& end_frame_reaching,
                           const Eigen::Affine3d& frame_aimed_at) override;

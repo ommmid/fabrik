@@ -29,6 +29,7 @@ struct FabrikOutput
     std::vector<double> joints_values_;
 
     /** \brief Some sort of error */
+    double target_ee_error;
 
     /** \brief Number of iterations */
     int final_iteration_num_;
@@ -67,9 +68,6 @@ int requested_iteration_num_;
 CalculatorPtr calculator_;
 
 CalculatorPtr createCalculator(const CalculatorType& calculator_type);
-
-// double calcError(const SolverType& solver_type, const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
-// double calcError(int(*calculator_type)(int), const Eigen::Affine3d& end_effector, const Eigen::Affine3d& target);
 
 void backwardReaching();
 

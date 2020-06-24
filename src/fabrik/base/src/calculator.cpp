@@ -29,11 +29,12 @@ double PositionBasedCalculator::calculateReach(const Eigen::Affine3d& start_fram
                                                const Eigen::Affine3d& end_frame_reaching,
                                                const Eigen::Affine3d& frame_aimed_at)
 {
-    // example, consider forward: .. e2][s3 e3] --> [s4 e4]
+    // example, consider forward to find J_3: .. e2][s3 e3] --> [s4 e4]
     // find the vector connecting s3 to s4: trans34 = trans4 - trans3
+    // what about backward ????
     Eigen::Vector3d start_to_aim = frame_aimed_at.translation() - start_frame_reaching.translation();
 
-    // create the plane whose normal is joint 3 
+    // create the plane whose normal is J_3 
     Eigen::Vector3d j_plane_normal(start_frame_reaching.rotation()(0,2),
                                     start_frame_reaching.rotation()(1,2),
                                     start_frame_reaching.rotation()(2,2));
@@ -46,12 +47,15 @@ double PositionBasedCalculator::calculateReach(const Eigen::Affine3d& start_fram
 
     // find the vector connecting s3 to e3
     Eigen::Vector3d start_to_end = end_frame_reaching.translation() - start_frame_reaching.translation();
+    
+    // start_to_end might not lie on the joint plane either. we have to project this as well
+    Eigen::Vector3d start_to_end_projected = j_plane.projection(start_to_end);
 
-    // find the angle between start_to_end and start_to_aim_projected
-    double angle = angleBetweenTwoVectors(start_to_end, start_to_aim_projected);
+    // find the angle FROM start_to_end_projected TO start_to_aim_projected. 
+    double angle = signedAngleBetweenTwoVectors(start_to_end_projected, start_to_aim_projected,
+                                                j_plane_normal);
 
-    // what is the joint angle after calculating the angle between two vectors ???
-    return angle * 10; // correct it
+    return angle; 
 }
 
 

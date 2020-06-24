@@ -11,6 +11,13 @@
 namespace robot_model
 {
 
+enum FabrikError
+{
+    SUCCESS = 0,
+    INVALID_CHAIN = 1
+};
+
+
 /** \brief Link has two frames. In the beginning {s_i} and end {e_i} of each link
  * with z-axis being the same as joint direction expressing both in world frame.
  * All the links of the manipulators
@@ -45,44 +52,39 @@ protected:
     Eigen::Affine3d link_frame_;
 };
 
-/** \brief Chain model including Links. */
-class Chain
-{
-public:
-    /** \brief Construct a Chaun by a series of Links relative transformation and assigns 
-     * default names to the links
-     */
-    Chain(const std::string& chain_name, const std::vector<Link>& chain_structure);
+// /** \brief Chain model including Links. */
+// class Chain
+// {
+// public:
+//     /** \brief Construct a Chaun by a series of Links relative transformation and assigns 
+//      * default names to the links
+//      */
+//     Chain(const std::string& chain_name, const std::vector<Link>& chain_structure);
    
-    /** \brief Get the robot struacture which is the set of links */
-    const std::vector<Link> getRobotStructur() const
-    {
-        return chain_structure_;
-    }
+//     /** \brief Get the robot struacture which is the set of links */
+//     const std::vector<Link> getRobotStructur() const
+//     {
+//         return chain_structure_;
+//     }
 
-    /** \brief Get dof */
-    const int getDOF() const
-    {
-        return dof_;
-    }
+//     /** \brief Get dof */
+//     const int getDOF() const
+//     {
+//         return dof_;
+//     }
     
-protected:
-    /** \brief The name of the manipulator. */
-    std::string chain_name_;
+// protected:
+//     /** \brief The name of the manipulator. */
+//     std::string chain_name_;
 
-    /** \brief A list of link frames (realative transformations of each link) representing the 
-     * structure of the robot. */
-    std::vector<Link> chain_structure_;
+//     /** \brief A list of link frames (realative transformations of each link) representing the 
+//      * structure of the robot. */
+//     std::vector<Link> chain_structure_;
 
-    /** \brief The degrees of freedom of the chain */
-    int dof_;
-};
+//     /** \brief The degrees of freedom of the chain */
+//     int dof_;
+// };
 
 
-enum Error
-{
-    SUCCESS = 0,
-    INVALID_CHAIN = 1
-};
 
 }

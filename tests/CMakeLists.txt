@@ -32,7 +32,8 @@ if (FABRIK_BUILD_TESTS)
     add_fabrik_test(test_world world/world.cpp)
     add_fabrik_test(test_robot_model robot_model/robot_model.cpp)
     add_fabrik_test(test_robot_state robot_state/robot_state.cpp)
-    add_fabrik_test(test_math math/math.cpp)
+    add_fabrik_test(test_math util/math.cpp)
+    add_fabrik_test(test_calculator base/calculator.cpp)
     
 endif()
 
