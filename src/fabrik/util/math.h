@@ -24,5 +24,6 @@ double randomDouble(const double start, const double end);
  */
 double signedAngleBetweenTwoVectors(Eigen::Vector3d& v1, Eigen::Vector3d& v2, Eigen::Vector3d& n);
 
+
 }
 

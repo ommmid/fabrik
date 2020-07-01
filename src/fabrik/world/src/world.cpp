@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "world.h"
+#include "fabrik/world/world.h"
 
 namespace worlds
 {

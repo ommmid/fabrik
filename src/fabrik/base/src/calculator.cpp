@@ -15,7 +15,6 @@ namespace fabrik
 
 PositionBasedCalculator::PositionBasedCalculator()
 {
-
 }
 
 double PositionBasedCalculator::calculateError(const Eigen::Affine3d& frame_1, const Eigen::Affine3d& frame_2)

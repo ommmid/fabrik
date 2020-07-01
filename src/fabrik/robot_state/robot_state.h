@@ -100,7 +100,7 @@ public:
         return frames_;
     } 
 
-    const std::pair<Eigen::Affine3d, Eigen::Affine3d> getFrames(int link_index) const
+    std::pair<Eigen::Affine3d, Eigen::Affine3d> getFrames(int link_index) const
     {
         return frames_[link_index];
     } 
@@ -120,7 +120,13 @@ public:
         reached_at_ = reaching_at;
     }
 
-    void printState(std::string name) const;
+    std::string createDashBoard() const;
+
+    /** \brief print out the information of the current state 
+     * \param text a text showing where this function is called from and more info if needed
+     * \param which_frames which frames to show the transformation for
+    */
+    void printState(const std::string text, const std::vector<int>& which_frames) const;
 
 private:
     /** \brief An integer showing the link number where the link start and end frame are updated
@@ -159,6 +165,7 @@ private:
     // do I need the target in the state too ???
 
 };
+
 
 
 }

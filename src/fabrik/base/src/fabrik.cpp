@@ -13,16 +13,20 @@
 namespace fabrik
 {
 
+
 // ------------------------- FABRIK -------------------------
-FABRIK::FABRIK(robot_state::RobotStatePtr& robot_state,
-           std::vector<double>& initial_configuration,
-           Eigen::Affine3d& target,
-           double threshold,
-           double requested_iteration_num,
-           CalculatorType calculator_type):
-robot_state_(robot_state), initial_configuration_(initial_configuration), 
+FABRIK::FABRIK( Eigen::Affine3d base,
+                std::vector<robot_model::Link> chain,
+                std::vector<double>& initial_configuration,
+                Eigen::Affine3d& target,
+                double threshold,
+                double requested_iteration_num,
+                CalculatorType calculator_type):
+initial_configuration_(initial_configuration), 
 target_(target), threshold_(threshold), requested_iteration_num_(requested_iteration_num)
 {
+    robot_state_ = std::make_shared<robot_state::RobotState>(chain, base);
+
     // set the state of the robot to the given initial_configuration
     int dof = robot_state_->getDOF();
     for (int k = 0; k < dof; ++k)
@@ -50,29 +54,43 @@ CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
 
 bool FABRIK::solve(FabrikOutput& output)
 {
-   
+std::cout << "========================== sooooolllvvvvveeeeee ======================" << std::endl;
+std::cout << "======================================================================" << std::endl;
+std::cout << "======================================================================" << std::endl;
+
+int dof = robot_state_->getDOF();
+
 // e_{n-1}_w is the end_effector, the end frame of the last link
-const Eigen::Affine3d& end_effector = robot_state_->getChain().back().getLinkFrame();
+Eigen::Affine3d end_effector = robot_state_->getFrames(dof - 1).second;
 double target_ee_error = calculator_->calculateError(end_effector, target_); 
 
-int iteration_num = 0;
-while (target_ee_error > threshold_ || (iteration_num == requested_iteration_num_))
-{
-    ++iteration_num;
+std::cout << "initial error: \n" << target_ee_error << std::endl;
 
+std::cout << "target: \n" << target_.matrix() << std::endl;
+robot_state_->printState("fabrik.cpp: Initial Configuration", std::vector<int>{0,1,2});
+
+
+int iteration_num = 0;
+while (target_ee_error > threshold_ && (iteration_num != requested_iteration_num_))
+{
     // do one backward reaching
     FABRIK::backwardReaching();
+    output.frames_matrix.push_back(robot_state_->getFrames());
     
     // do one forward reaching
     FABRIK::forwardReaching();
+    output.frames_matrix.push_back(robot_state_->getFrames());
 
     target_ee_error = calculator_->calculateError(end_effector, target_); 
+
+    ++iteration_num;
+    std::cout << "iteration number: " << iteration_num <<
+    "\ntarget_ee_error: " << target_ee_error << std::endl;
 }
 
-output.final_iteration_num_ = iteration_num;
-int dof = robot_state_->getDOF();
-for(int k = 0; k < dof; ++k)
-    output.joints_values_[k] = robot_state_->getJointsValues(k);
+output.final_iteration_num = iteration_num;
+output.solution_joints_values = robot_state_->getJointsValues();
+
 output.target_ee_error = target_ee_error;
 
 return true;
@@ -116,6 +134,9 @@ void FABRIK::backwardReaching()
         // We do not need to negate reaching_angle. updateState will update the right frames
         // in the right way based on the reaching direction set.
         robot_state_->updateState(reaching_angle, joint_number);
+
+
+        // robot_state_->printState("Backward Reaching .....", std::vector<int>{0,1,2});
     }
 }
 
@@ -151,6 +172,8 @@ void FABRIK::forwardReaching()
                                                             s_2);
         
         robot_state_->updateState(reaching_angle, joint_number);
+
+        // robot_state_->printState("Forward Reaching .....", std::vector<int>{0,1,2});
     }
 }
 

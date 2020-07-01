@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "Robot State"
+#define BOOST_TEST_MODULE "Calculator"
 
 #include <iostream>
 #include <vector>
@@ -17,6 +17,7 @@
 #include "fabrik/base/calculator.h"
 
 const double TRANSLATION_ERROR = 1e-6;
+const double ANGLE_ERROR = 1e-5;
 
 class Maker
 {
@@ -90,7 +91,52 @@ BOOST_AUTO_TEST_CASE(CalculateError)
 }
 
 
-BOOST_AUTO_TEST_CASE(CalculateReach)
+BOOST_AUTO_TEST_CASE(CalculateReach2D)
 {
+    std::cout << "========== Calculate Reach 2D ==========" << std::endl;
 
+    fabrik::CalculatorPtr calculator(new fabrik::PositionBasedCalculator());
+
+    // frames in 2D so I can calculate the reaching angle manulally easier
+    Eigen::Affine3d start_frame_reaching(Eigen::AngleAxisd(0.30, Eigen::Vector3d(0,0,1)));
+    start_frame_reaching.translation() = Eigen::Vector3d(0,0,0);
+
+    Eigen::Affine3d end_frame_reaching(Eigen::AngleAxisd(0.40, Eigen::Vector3d(0,0,1)));
+    end_frame_reaching.translation() = Eigen::Vector3d(1,1,0);
+
+    Eigen::Affine3d frame_aimed_at(Eigen::AngleAxisd(0.50, Eigen::Vector3d(0,0,1)));
+    frame_aimed_at.translation() = Eigen::Vector3d(-2,2,0);
+
+    // The angle shoul be pi/2
+    double angle = calculator->calculateReach(start_frame_reaching,
+                               end_frame_reaching,
+                               frame_aimed_at);
+
+    std::cout << "reaching angle: " << angle * 180 / M_PI << std::endl;
+    BOOST_TEST((angle - M_PI_2) < ANGLE_ERROR);
 }
+
+BOOST_AUTO_TEST_CASE(CalculateReach3D)
+{
+    std::cout << "========== Calculate Reach 3D ==========" << std::endl;
+
+    fabrik::CalculatorPtr calculator(new fabrik::PositionBasedCalculator());
+
+    // frames in 3D so I can calculate the reaching angle manually easier
+    Eigen::Affine3d start_frame_reaching(Eigen::AngleAxisd(0.30, Eigen::Vector3d(0,0,1)));
+    start_frame_reaching.translation() = Eigen::Vector3d(0,0,0);
+
+    Eigen::Affine3d end_frame_reaching(Eigen::AngleAxisd(0.40, Eigen::Vector3d(3,1,1)));
+    end_frame_reaching.translation() = Eigen::Vector3d(1,1,1);
+
+    Eigen::Affine3d frame_aimed_at(Eigen::AngleAxisd(0.50, Eigen::Vector3d(2,0,1)));
+    frame_aimed_at.translation() = Eigen::Vector3d(-2,2,2);
+
+    double angle = calculator->calculateReach(start_frame_reaching,
+                               end_frame_reaching,
+                               frame_aimed_at);
+
+    std::cout << "reaching angle: " << angle * 180 / M_PI << std::endl;
+    BOOST_TEST((angle - M_PI_2) < ANGLE_ERROR);
+}
+
