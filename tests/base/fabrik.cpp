@@ -20,123 +20,27 @@
 
 const double TRANSLATION_ERROR = 1e-6;
 const double ANGLE_ERROR = 1e-5;
-
-class MakerPlanar
-{
-public:
-
-    MakerPlanar()
-    {
-        makeChain();
-        makeBase();
-    }
-
-    void makeChain()
-    {
-        Eigen::Vector3d vec1(0,0,1);
-        vec1.normalize();
-        Eigen::Affine3d link1_frame(Eigen::AngleAxisd(0, vec1));
-        link1_frame.translation() = Eigen::Vector3d(1, 0, 0);
-        fabrik::Link link1("link1",  link1_frame);
-
-        Eigen::Vector3d vec2(0,0,1);
-        vec2.normalize();
-        Eigen::Affine3d link2_frame(Eigen::AngleAxisd(0, vec2));
-        link2_frame.translation() = Eigen::Vector3d(1, 0, 0);
-        fabrik::Link link2("link2",  link2_frame);
-
-        Eigen::Vector3d vec3(0,0,1);
-        vec3.normalize();
-        Eigen::Affine3d link3_frame(Eigen::AngleAxisd(0, vec3));
-        link3_frame.translation() = Eigen::Vector3d(1, 0, 0);
-        fabrik::Link link3("link3",  link3_frame);
-
-        chain.push_back(link1);
-        chain.push_back(link2);
-        chain.push_back(link3);
-    }
-
-    void makeBase()
-    {
-        Eigen::Vector3d vec0(0,0,1);
-        vec0.normalize();
-        Eigen::Affine3d base_transformation(Eigen::AngleAxisd(0, vec0));
-        base_transformation.translate(Eigen::Vector3d(0, 0, 0));
-        base = base_transformation;
-    }
-
-    std::vector<fabrik::Link> chain;
-    Eigen::Affine3d base;
-};
-
-class MakerSpatial
-{
-public:
-
-    MakerSpatial()
-    {
-        makeChain();
-        makeBase();
-    }
-
-    void makeChain()
-    {
-        Eigen::Vector3d vec1(5,1,3);
-        vec1.normalize();
-        Eigen::Affine3d link1_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec1));
-        link1_frame.translation() = Eigen::Vector3d(1,2.2,3);
-        fabrik::Link link1("link1",  link1_frame);
-
-        Eigen::Vector3d vec2(3,2,3);
-        vec2.normalize();
-        Eigen::Affine3d link2_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec2));
-        link2_frame.translation() = Eigen::Vector3d(1.7, 3, 2.5);
-        fabrik::Link link2("link2",  link2_frame);
-
-        Eigen::Vector3d vec3(1,6,4);
-        vec3.normalize();
-        Eigen::Affine3d link3_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec3));
-        link3_frame.translation() = Eigen::Vector3d(0.5, 4, 1);
-        fabrik::Link link3("link3",  link3_frame);
-
-        chain.push_back(link1);
-        chain.push_back(link2);
-        chain.push_back(link3);
-    }
-
-    void makeBase()
-    {
-        Eigen::Vector3d vec0(0,1,1);
-        vec0.normalize();
-        Eigen::Affine3d base_transformation(Eigen::AngleAxisd(0, vec0));
-        base_transformation.translate(Eigen::Vector3d(0.5, 0.5, 0.5));
-        base = base_transformation;
-    }
-
-    std::vector<fabrik::Link> chain;
-    Eigen::Affine3d base;
-};
-
+const double ROTATION_ERROR = 1e-5;
 
 BOOST_AUTO_TEST_CASE(FABRIK2D)
 {
-    MakerPlanar maker;
+    fabrik::RobotModelPtr robot_model = fabrik::makeSimpleRobot2D();
+    fabrik::RobotStatePtr robot_state_1 = 
+        std::make_shared<fabrik::RobotState>(robot_model);
 
     // ---------------------- Solve a forward kinematics first:
-    fabrik::RobotStatePtr robot_state_1 = 
-        std::make_shared<fabrik::RobotState>(maker.chain, maker.base);
-
     robot_state_1->setReachingDirection(fabrik::ReachingDirection::FORWARD);
     std::vector<double> fk_joints_values_1 = {M_PI_4, 0, 0};
     for (int k = 0; k < 3; ++k)
         robot_state_1->updateState(fk_joints_values_1[k], k);
 
-    robot_state_1->printState("FABRIK - first configuration", std::vector<int>{-1});
+    robot_state_1->printState("FABRIK - first configuration", std::vector<int>{0,1,2});
     
+    // The length of the links from makeSimpleRobot2D is 1 and in local x direction
     Eigen::Affine3d end_effector_1 = robot_state_1->getFrames(2).second;
     Eigen::Vector3d expected_location_1(3 * std::cos(M_PI_4),
-                                      3 * std::sin(M_PI_4),
-                                      0);
+                                        3 * std::sin(M_PI_4),
+                                        0);
 
     for(int k = 0; k < 3; ++k)
     {
@@ -145,7 +49,7 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
 
     // ---------------------- Solve another forward kinematics close to the first one:
     fabrik::RobotStatePtr robot_state_2 = 
-        std::make_shared<fabrik::RobotState>(maker.chain, maker.base);
+        std::make_shared<fabrik::RobotState>(robot_model);
     
     robot_state_2->setReachingDirection(fabrik::ReachingDirection::FORWARD);
     double theta_1 = M_PI_4 + 0.1;
@@ -155,7 +59,7 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
     for (int k = 0; k < 3; ++k)
         robot_state_2->updateState(fk_joints_values_2[k], k);
 
-    robot_state_2->printState("FABRIK - second configuration", std::vector<int>{-1});
+    robot_state_2->printState("FABRIK - second configuration", std::vector<int>{0,1,2});
 
     Eigen::Affine3d end_effector_2 = robot_state_2->getFrames(2).second;
     Eigen::Vector3d expected_location_2(
@@ -170,11 +74,10 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
 
     // get the end effector frame of the second state
     Eigen::Affine3d target = end_effector_2;
-    double threshold = 0.001;
-    double requested_iteration_num = 3;
+    double threshold = 0.01;
+    double requested_iteration_num = 100;
 
-    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(maker.base,
-                                                maker.chain,
+    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(robot_model,
                                                 fk_joints_values_1,
                                                 target,
                                                 threshold,
@@ -184,78 +87,17 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
     fabrik::FabrikOutput output;
     bool solved = fabrik->solve(output);
 
-    std::cout << "solved? " << solved << std::endl;
     if(solved)
     {
+        std::cout << "solve was successful" << std::endl;
         std::cout << "total iteration: " << output.final_iteration_num << std::endl;
         std::cout << "error: " << output.target_ee_error << std::endl;
-        for (int k = 0; k < 3; ++k)
-            std::cout << "joint value_" << k << ":" << output.solution_joints_values[k] << std::endl;
     }
-
-    for (int i = 0; i < 2 * requested_iteration_num; ++i)
-    {
-        std::cout << "-------------- row number: " << i << std::endl;
-        for (int j = 0; j < 3; ++j)
-        {
-            std::cout << "start: \n" << output.frames_matrix[i][j].first.translation() << std::endl;
-            std::cout << "end: \n" << output.frames_matrix[i][j].second.translation()  << std::endl;
-        }
-    }
-
 }
 
 BOOST_AUTO_TEST_CASE(FABRIK3D)
 {
-    // MakerSpatial maker;
-
-    // // Solve a forward kinematics first:
-    // fabrik::RobotStatePtr robot_state_1 = 
-    //     std::make_shared<fabrik::RobotState>(maker.chain, maker.base);
-
-    // robot_state_1->setReachingDirection(fabrik::ReachingDirection::FORWARD);
-    // std::vector<double> fk_joints_values_1 = {0.3, 0.5, 0.4};
-    // for (int k = 0; k < 3; ++k)
-    //     robot_state_1->updateState(fk_joints_values_1[k], k);
-
-    // robot_state_1->printState("FABRIK - first configuration", std::vector<int>{-1});
-    
-    // // Solve another forward kinematics close to the first one:
-    // fabrik::RobotStatePtr robot_state_2 = 
-    //     std::make_shared<fabrik::RobotState>(maker.chain, maker.base);
-    
-    // robot_state_2->setReachingDirection(fabrik::ReachingDirection::FORWARD);
-    // std::vector<double> fk_joints_values_2 = {0.35, 0.52, 0.43};
-    // for (int k = 0; k < 3; ++k)
-    //     robot_state_2->updateState(fk_joints_values_2[k], k);
-
-    // robot_state_2->printState("FABRIK - second configuration", std::vector<int>{-1});
-
-    // // get the end effector frame of the second state
-    // Eigen::Affine3d target = robot_state_2->getFrames(2).second;
-  
-    // double threshold = 0.001;
-    // double requested_iteration_num = 10;
-
-    // fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(maker.base,
-    //                                             maker.chain,
-    //                                             fk_joints_values_1,
-    //                                             target,
-    //                                             threshold,
-    //                                             requested_iteration_num,
-    //                                             fabrik::CalculatorType::POSITION));
-    
-    // fabrik::FabrikOutput output(maker.chain.size());
-    // bool solved = fabrik->solve(output);
-
-    // std::cout << "solved? " << solved << std::endl;
-    // if(solved)
-    // {
-    //     std::cout << "total iteration" << output.final_iteration_num << std::endl;
-    //     std::cout << "error" << output.target_ee_error << std::endl;
-    //     for (int k = 0; k < 3; ++k)
-    //         std::cout << "joint value_" << k << ":" << output.joints_values[k] << std::endl;
-    // }
+   
 
 }
 

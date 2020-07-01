@@ -15,11 +15,13 @@
 
 BOOST_AUTO_TEST_SUITE(Suite1)
 
-BOOST_AUTO_TEST_CASE(GetFrame)
+BOOST_AUTO_TEST_CASE(EmptyChain)
 {
-        
-
-    BOOST_CHECK_EQUAL(1, 1);
+    std::cout << "========== Empty Chain" << std::endl;
+    std::vector<fabrik::Link> chain;
+    const Eigen::Affine3d& base = Eigen::Affine3d::Identity();
+    
+    BOOST_CHECK_THROW(fabrik::RobotModel("test_robot", base, chain), std::exception);
 }
 
 

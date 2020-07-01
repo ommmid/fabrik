@@ -11,17 +11,15 @@ namespace fabrik
 {
 
 // -------------------- RobotState --------------------
-RobotState::RobotState(const std::vector<fabrik::Link>& chain, const Eigen::Affine3d& base):
-chain_(chain), base_(base)
+RobotState::RobotState(const RobotModelPtr& robot_model):
+robot_model_(robot_model)
 {
-    if(chain.size() == 0)
-    {
-        throw fabrik::Exception("chain must have at least one link.");
-    }
+    base_ = robot_model_->getBase();
+    chain_ = robot_model_->getRobotChain();
 
     reaching_direction_ = ReachingDirection::FORWARD;
 
-    dof_ = chain.size();
+    dof_ = robot_model_->getDOF();
     reached_at_ = dof_ - 1;
     
     joints_values_.resize(dof_);

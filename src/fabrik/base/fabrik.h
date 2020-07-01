@@ -36,9 +36,10 @@ struct FabrikOutput
     /** \brief Number of iterations */
     int final_iteration_num;
 
-    /** \brief a data structure to store all the frames in forward and backward reaching.
-     * each row is a "frames_" and the first row is backward reaching followed by a forward
-     * reaching in the second row. Obviously the last row is a forward reaching.
+    /** \brief a data structure to store all the frames in forward and backward reaching
+     * for all the iterations.
+     * each row (inner vector) is a "frames_" and the first row is backward reaching followed
+     * by a forward reaching in the second row. Obviously the last row is a forward reaching.
      */
     std::vector<std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>>> frames_matrix;
 };
@@ -50,8 +51,7 @@ class FABRIK
 {
 public:
     /** \brief Construct a FABRIK object */
-    FABRIK( Eigen::Affine3d base,
-            std::vector<fabrik::Link> chain,
+    FABRIK( const RobotModelPtr& robot_model,
             std::vector<double>& initial_configuration,
             Eigen::Affine3d& target,
             double threshold,

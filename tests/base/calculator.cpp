@@ -19,52 +19,6 @@
 const double TRANSLATION_ERROR = 1e-6;
 const double ANGLE_ERROR = 1e-5;
 
-class Maker
-{
-public:
-
-    Maker()
-    {
-        makeRobot();
-        robot_state_ptr = std::make_shared<fabrik::RobotState>(chain_, base_);
-    }
-
-    void makeRobot()
-    {
-        Eigen::Vector3d vec1(5,1,3);
-        vec1.normalize();
-        Eigen::Affine3d link1_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec1));
-        fabrik::Link link1("link1",  link1_frame);
-
-        Eigen::Vector3d vec2(3,2,3);
-        vec2.normalize();
-        Eigen::Affine3d link2_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec2));
-        fabrik::Link link2("link2",  link2_frame);
-
-        Eigen::Vector3d vec3(1,6,4);
-        vec3.normalize();
-        Eigen::Affine3d link3_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec3));
-        fabrik::Link link3("link3",  link3_frame);
-
-        chain_.push_back(link1);
-        chain_.push_back(link2);
-        chain_.push_back(link3);
-
-        Eigen::Vector3d vec0(1,6,2);
-        vec0.normalize();
-        Eigen::Affine3d base(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec0));
-        base.translate(Eigen::Vector3d(0.5, 0.5, 0.5));
-        base_ = base;
-    }
-
-     fabrik::RobotStatePtr robot_state_ptr;
-
-private:
-    std::vector<fabrik::Link> chain_;
-    Eigen::Affine3d base_;
-};
-
-
 
 BOOST_AUTO_TEST_CASE(CalculateError)
  {

@@ -36,7 +36,7 @@ public:
      * reachin_direction_ = FORWARD
      * joint_values = set to zeros
      */
-    RobotState(const std::vector<fabrik::Link>& chain, const Eigen::Affine3d& base);
+    RobotState(const RobotModelPtr& robot_model);
 
     // /** \brief Not sure if I need to create any other constructor
     //  */
@@ -65,11 +65,6 @@ public:
         return reached_at_;
     }
 
-    int getDOF() const
-    {
-        return dof_;
-    }
-
     ReachingDirection getReachingDirection() const
     {
         return reaching_direction_;
@@ -85,16 +80,6 @@ public:
         return joints_values_[index];
     }
 
-    const std::vector<fabrik::Link> getChain() const
-    {
-        return chain_;
-    }
-
-    const fabrik::Link getLink(int index) const
-    {
-        return chain_[index];
-    }
-
     const std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>> getFrames() const
     {
         return frames_;
@@ -105,10 +90,10 @@ public:
         return frames_[link_index];
     } 
 
-    const Eigen::Affine3d getBase() const
+    const RobotModelPtr getRobotModel() const
     {
-        return base_;
-    } 
+        return robot_model_;
+    }
 
     void setReachingDirection(ReachingDirection reaching_direction)
     {
@@ -146,9 +131,10 @@ private:
     /** \brief Chain. The shared pointer is pointing to a const fabrik::Chain
      * because we wont change this chain (it is the structure of the robot)
      */
-    // std::shared_ptr<const fabrik::Chain> chain_;
-    std::vector<fabrik::Link> chain_;
-    
+    RobotModelPtr robot_model_;
+
+    std::vector<Link> chain_;
+
     /** \brief All frames of all links in order, expressed in world frame:
      * [s_0 e_0 s_1 e_1 .... s_n-1 e_n-1]. Because I want to keep the indecis easily 
      * to read. I will make pair for each start and end:
@@ -162,7 +148,6 @@ private:
      *  <start/end>_<frame number>_<the frame this frame is expressed in>
      */
     Eigen::Affine3d base_;
-    // do I need the target in the state too ???
 
 };
 
