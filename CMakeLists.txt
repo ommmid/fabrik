@@ -11,8 +11,11 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # the base point(absolute path starting point), ${CMAKE_INSTALL_PREFIX}, is set to /usr/local
 include(GNUInstallDirs)
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
 message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+message(STATUS "CMAKE_INSTALL_LIBDIR: ${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
+message(STATUS "CMAKE_INSTALL_DATAROOTDIR: ${CMAKE_INSTALL_DATAROOTDIR}")
+
 
 # --- find depend upon packages
 find_package(Eigen3 REQUIRED)
@@ -21,21 +24,19 @@ include_directories(
 )
 
 # create config file using cmake helper
-# include(CMakePackageConfigHelpers)
+include(CMakePackageConfigHelpers)
 # 1 arg: input, 2 arg: ouput
 # INSTALL_DESTINATION is where the ouput will be installed
 # NO_CHECK_REQUIRED_COMPONENTS_MACRO prevents @package_init@ from defining some helper function
-# set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
-# set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-# configure_package_config_file(fabrikConfig.cmake.in
-#     ${CMAKE_BINARY_DIR}/fabrikConfig.cmake
-#     INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fabrik/cmake
-#     PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
-#     NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+configure_package_config_file(fabrikConfig.cmake.in ${CMAKE_BINARY_DIR}/fabrikConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fabrik/cmake
+    PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 enable_testing()
 # include(CTest)
-
 
 # --- This is a list of directories to be used as header search paths, 
 # all of which must be absolute paths
@@ -60,7 +61,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_library(fabrik SHARED ${FABRIK_SOURCE_CODE})
 target_link_libraries(fabrik Eigen3::Eigen)
 
-message(STATUS "--------------- ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 
 # install the library
@@ -68,29 +68,28 @@ install(TARGETS fabrik
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-
-# install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-# "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-# DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-
 # ----- install headers
-# installs the content of DIRECTORY to a given DESTINATION
+# installs the DIRECTORY and its contents to a given DESTINATION
 # The directory structure is copied verbatim(word by word = exactly) to the destination
-# install(
-#     DIRECTORY src/fabrik/ 
-#     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/fabrik"
-#     COMPONENT fabrik
-#     FILES_MATCHING 
-#     PATTERN "*.h" 
-#     PATTERN ".DS_Store" EXCLUDE
-#     PATTERN "sample_contrib" EXCLUDE
-#     REGEX "/src$" EXCLUDE
-#     REGEX "/doc$" EXCLUDE
-#     REGEX "/tests$" EXCLUDE
-# )
+install(
+    DIRECTORY src/fabrik
+    DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}
+    COMPONENT fabrik
+    FILES_MATCHING 
+    PATTERN "*.h" 
+    PATTERN ".DS_Store" EXCLUDE
+    PATTERN "sample_contrib" EXCLUDE
+    REGEX "/src$" EXCLUDE
+    REGEX "/doc$" EXCLUDE
+    REGEX "/tests$" EXCLUDE
+)
 
-
-
+# fabrikConfig.cmake was created by configure_package_config_file() using fabrikConfig.cmake.in that I have created
+install(FILES ${CMAKE_BINARY_DIR}/fabrikConfig.cmake
+    # ${CMAKE_CURRENT_BINARY_DIR}/fabrikConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fabrik/cmake
+    #COMPONENT ompl what is component ??????????????????????????
+)
 
 
 # add_subdirectory(src/fabrik)

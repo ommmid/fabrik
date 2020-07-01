@@ -8,7 +8,7 @@
 #include <vector>
 
 /** \brief Modeling robot parts */
-namespace robot_model
+namespace fabrik
 {
 
 enum FabrikError

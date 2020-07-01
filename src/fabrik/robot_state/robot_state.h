@@ -10,7 +10,7 @@
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/util/class_forward.h"
 
-namespace robot_state
+namespace fabrik
 {
     
 enum ReachingDirection
@@ -36,11 +36,11 @@ public:
      * reachin_direction_ = FORWARD
      * joint_values = set to zeros
      */
-    RobotState(const std::vector<robot_model::Link>& chain, const Eigen::Affine3d& base);
+    RobotState(const std::vector<fabrik::Link>& chain, const Eigen::Affine3d& base);
 
     // /** \brief Not sure if I need to create any other constructor
     //  */
-    // RobotState(const std::vector<robot_model::Link>& chain,
+    // RobotState(const std::vector<fabrik::Link>& chain,
     //            const Eigen::Affine3d& base,
     //            const ReachingDirection& reaching_direction);
 
@@ -85,12 +85,12 @@ public:
         return joints_values_[index];
     }
 
-    const std::vector<robot_model::Link> getChain() const
+    const std::vector<fabrik::Link> getChain() const
     {
         return chain_;
     }
 
-    const robot_model::Link getLink(int index) const
+    const fabrik::Link getLink(int index) const
     {
         return chain_[index];
     }
@@ -143,11 +143,11 @@ private:
     /** \brief The value of each joint for the current state. Joint number start from 0. */
     std::vector<double> joints_values_;
 
-    /** \brief Chain. The shared pointer is pointing to a const robot_model::Chain
+    /** \brief Chain. The shared pointer is pointing to a const fabrik::Chain
      * because we wont change this chain (it is the structure of the robot)
      */
-    // std::shared_ptr<const robot_model::Chain> chain_;
-    std::vector<robot_model::Link> chain_;
+    // std::shared_ptr<const fabrik::Chain> chain_;
+    std::vector<fabrik::Link> chain_;
     
     /** \brief All frames of all links in order, expressed in world frame:
      * [s_0 e_0 s_1 e_1 .... s_n-1 e_n-1]. Because I want to keep the indecis easily 

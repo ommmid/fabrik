@@ -7,11 +7,11 @@
 #include "fabrik/util/exception.h"
 #include "fabrik/util/math.h"
 
-namespace robot_state
+namespace fabrik
 {
 
 // -------------------- RobotState --------------------
-RobotState::RobotState(const std::vector<robot_model::Link>& chain, const Eigen::Affine3d& base):
+RobotState::RobotState(const std::vector<fabrik::Link>& chain, const Eigen::Affine3d& base):
 chain_(chain), base_(base)
 {
     if(chain.size() == 0)
@@ -55,7 +55,7 @@ void RobotState::updateState(const double& joint_value, const int& joint_number)
     // std::cout << "joint number: " << joint_number << " joint value: " << joint_value << std::endl;
 
     // update s_i and e_i
-    if (reaching_direction_ == robot_state::ReachingDirection::FORWARD)
+    if (reaching_direction_ == fabrik::ReachingDirection::FORWARD)
     {
         joints_values_[joint_number] = joint_value;
 
@@ -76,7 +76,7 @@ void RobotState::updateState(const double& joint_value, const int& joint_number)
 
     }
     // update s_{i-1} and e_{i-1}
-    else if (reaching_direction_ == robot_state::ReachingDirection::BACKWARD)
+    else if (reaching_direction_ == fabrik::ReachingDirection::BACKWARD)
     {       
         if(joint_number == 0)
         {
@@ -136,7 +136,7 @@ void RobotState::printState(const std::string text, const std::vector<int>& whic
 
 std::string RobotState::createDashBoard() const
 {
-    std::string arrow = reaching_direction_ == robot_state::ReachingDirection::FORWARD ?
+    std::string arrow = reaching_direction_ == fabrik::ReachingDirection::FORWARD ?
              "===>" : "<===";
 
     std::string dash_board = "      |";

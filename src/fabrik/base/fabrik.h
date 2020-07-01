@@ -11,6 +11,8 @@
 #include "fabrik/util/class_forward.h"
 #include "fabrik/base/calculator.h"
 
+#include "fabrik/robot_state/robot_state.h"
+
 namespace fabrik
 {  
 
@@ -49,7 +51,7 @@ class FABRIK
 public:
     /** \brief Construct a FABRIK object */
     FABRIK( Eigen::Affine3d base,
-            std::vector<robot_model::Link> chain,
+            std::vector<fabrik::Link> chain,
             std::vector<double>& initial_configuration,
             Eigen::Affine3d& target,
             double threshold,
@@ -60,15 +62,15 @@ public:
     bool solve(FabrikOutput& output);
 
     // how to get a const robot state to return from fabrik object ?????
-    // robot_state::RobotStateConstPtr getConstRobotState()
+    // fabrik::RobotStateConstPtr getConstRobotState()
     // {
-    //     robot_state::RobotStateConstPtr const_robot_state = robot_state_;
+    //     fabrik::RobotStateConstPtr const_robot_state = robot_state_;
     //     return 
     // }
 
 private:
 
-robot_state::RobotStatePtr robot_state_;
+fabrik::RobotStatePtr robot_state_;
 
 /** \brief Joint values at the initial configuration. */
 std::vector<double> initial_configuration_;

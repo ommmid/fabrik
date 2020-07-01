@@ -8,7 +8,7 @@
 #include "fabrik/util/exception.h"
 
 
-namespace robot_model
+namespace fabrik
 {
 
 // -------------------- Link --------------------

@@ -26,7 +26,7 @@ public:
     Maker()
     {
         makeRobot();
-        robot_state_ptr = std::make_shared<robot_state::RobotState>(chain_, base_);
+        robot_state_ptr = std::make_shared<fabrik::RobotState>(chain_, base_);
     }
 
     void makeRobot()
@@ -34,17 +34,17 @@ public:
         Eigen::Vector3d vec1(5,1,3);
         vec1.normalize();
         Eigen::Affine3d link1_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec1));
-        robot_model::Link link1("link1",  link1_frame);
+        fabrik::Link link1("link1",  link1_frame);
 
         Eigen::Vector3d vec2(3,2,3);
         vec2.normalize();
         Eigen::Affine3d link2_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec2));
-        robot_model::Link link2("link2",  link2_frame);
+        fabrik::Link link2("link2",  link2_frame);
 
         Eigen::Vector3d vec3(1,6,4);
         vec3.normalize();
         Eigen::Affine3d link3_frame(Eigen::AngleAxisd(fabrik::randomDouble(0, 1), vec3));
-        robot_model::Link link3("link3",  link3_frame);
+        fabrik::Link link3("link3",  link3_frame);
 
         chain_.push_back(link1);
         chain_.push_back(link2);
@@ -57,10 +57,10 @@ public:
         base_ = base;
     }
 
-     robot_state::RobotStatePtr robot_state_ptr;
+     fabrik::RobotStatePtr robot_state_ptr;
 
 private:
-    std::vector<robot_model::Link> chain_;
+    std::vector<fabrik::Link> chain_;
     Eigen::Affine3d base_;
 };
 

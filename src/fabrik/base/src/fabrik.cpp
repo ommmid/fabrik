@@ -16,7 +16,7 @@ namespace fabrik
 
 // ------------------------- FABRIK -------------------------
 FABRIK::FABRIK( Eigen::Affine3d base,
-                std::vector<robot_model::Link> chain,
+                std::vector<fabrik::Link> chain,
                 std::vector<double>& initial_configuration,
                 Eigen::Affine3d& target,
                 double threshold,
@@ -25,7 +25,7 @@ FABRIK::FABRIK( Eigen::Affine3d base,
 initial_configuration_(initial_configuration), 
 target_(target), threshold_(threshold), requested_iteration_num_(requested_iteration_num)
 {
-    robot_state_ = std::make_shared<robot_state::RobotState>(chain, base);
+    robot_state_ = std::make_shared<fabrik::RobotState>(chain, base);
 
     // set the state of the robot to the given initial_configuration
     int dof = robot_state_->getDOF();
@@ -98,7 +98,7 @@ return true;
 
 void FABRIK::backwardReaching()
 {
-    robot_state_->setReachingDirection(robot_state::ReachingDirection::BACKWARD);
+    robot_state_->setReachingDirection(fabrik::ReachingDirection::BACKWARD);
     // set the last frame in frames_ to the target
     robot_state_->updateState(target_);
 
@@ -142,7 +142,7 @@ void FABRIK::backwardReaching()
 
 void FABRIK::forwardReaching()
 {
-    robot_state_->setReachingDirection(robot_state::ReachingDirection::FORWARD);
+    robot_state_->setReachingDirection(fabrik::ReachingDirection::FORWARD);
 
     int dof = robot_state_->getDOF();   
     for(int joint_number = 0; joint_number < dof ; ++joint_number)
