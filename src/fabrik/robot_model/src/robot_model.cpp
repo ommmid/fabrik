@@ -43,7 +43,6 @@ RobotModelPtr makeSimpleRobot2D()
 {
     std::string robot_name = "simple 2D robot";
     std::vector<fabrik::Link> chain;
-    Eigen::Affine3d base;
 
     Eigen::Vector3d vec1(0,0,1);
     vec1.normalize();
@@ -69,10 +68,51 @@ RobotModelPtr makeSimpleRobot2D()
     
     Eigen::Vector3d vec0(0,0,1);
     vec0.normalize();
-    Eigen::Affine3d base_transformation(Eigen::AngleAxisd(0, vec0));
-    base_transformation.translate(Eigen::Vector3d(0, 0, 0));
-    base = base_transformation;
+    Eigen::Affine3d base(Eigen::AngleAxisd(0, vec0));
+    base.translation() = Eigen::Vector3d(0, 0, 0);
 
+    RobotModelPtr robot_model = std::make_shared<RobotModel>(robot_name, base, chain);
+    return robot_model;
+}
+
+RobotModelPtr makeSimpleRobot3D()
+{
+    std::string robot_name = "simple 3D robot";
+
+    Eigen::Vector3d vec0(0,0,1);;
+    vec0.normalize();
+    Eigen::Affine3d base(Eigen::AngleAxisd(0, vec0));
+    base.translation() = Eigen::Vector3d(0, 0, 0);
+    std::cout << "base_frame:\n" << base.matrix() << std::endl;
+
+    Eigen::Vector3d vec1 = Eigen::MatrixXd::Random(3,1); vec1.normalize();
+    Eigen::Affine3d link1_frame(Eigen::AngleAxisd(0.1, vec1));
+    Eigen::Vector3d trans1 = Eigen::MatrixXd::Random(3,1); trans1.normalize();
+    link1_frame.translation() = trans1;
+    fabrik::Link link1("link1",  link1_frame);
+    std::cout << "link1_frame:\n" << link1_frame.matrix() << std::endl;
+
+    Eigen::Vector3d vec2 = Eigen::MatrixXd::Random(3,1);
+    vec2.normalize();
+    Eigen::Affine3d link2_frame(Eigen::AngleAxisd(0.1, vec2));
+    Eigen::Vector3d trans2 = Eigen::MatrixXd::Random(3,1); trans2.normalize();
+    link2_frame.translation() = trans2;
+    fabrik::Link link2("link2",  link2_frame);
+    std::cout << "link2_frame:\n" << link2_frame.matrix() << std::endl;
+
+    Eigen::Vector3d vec3 = Eigen::MatrixXd::Random(3,1);
+    vec3.normalize();
+    Eigen::Affine3d link3_frame(Eigen::AngleAxisd(0.1, vec3));
+    Eigen::Vector3d trans3 = Eigen::MatrixXd::Random(3,1); trans3.normalize();
+    link3_frame.translation() = trans3;
+    fabrik::Link link3("link3",  link3_frame);
+    std::cout << "link3_frame:\n" << link3_frame.matrix() << std::endl;
+
+    std::vector<fabrik::Link> chain;
+    chain.push_back(link1);
+    chain.push_back(link2);
+    chain.push_back(link3);
+    
     RobotModelPtr robot_model = std::make_shared<RobotModel>(robot_name, base, chain);
     return robot_model;
 }

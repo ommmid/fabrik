@@ -62,6 +62,7 @@ int dof = robot_state_->getRobotModel()->getDOF();
 // e_{n-1}_w is the end_effector, the end frame of the last link
 Eigen::Affine3d end_effector = robot_state_->getFrames(dof - 1).second;
 double target_ee_error = calculator_->calculateError(end_effector, target_); 
+output.target_ee_error_track.push_back(target_ee_error);
 
 std::cout << "initial error: \n" << target_ee_error << std::endl;
 std::cout << "target: \n" << target_.matrix() << std::endl;
@@ -84,6 +85,7 @@ while (target_ee_error > threshold_ && (iteration_num != requested_iteration_num
 
     end_effector = robot_state_->getFrames(dof - 1).second;
     target_ee_error = calculator_->calculateError(end_effector, target_); 
+    output.target_ee_error_track.push_back(target_ee_error);
 
     std::cout << "\ntarget_ee_error: " << target_ee_error << std::endl;
     robot_state_->printState("fabrik::fabrik.cpp: forwardReaching", std::vector<int>{0,1,2});
@@ -110,7 +112,7 @@ void FABRIK::backwardReaching()
     // J_(dof-1) ... J_1
     for(int joint_number = dof - 1; joint_number > 0; --joint_number)
     {
-        // Example: dof = 6. to claculate J_2, we need e1, s1 and e0
+        // Example:  to claculate J_2, we need e1, s1 and e0
         // - e1 should be set equal to s2. Have 0 for joint value of J_2
         // - update s1 based on this new e1
         // - project e1_s1 and e1_e0

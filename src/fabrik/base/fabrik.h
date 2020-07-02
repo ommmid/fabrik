@@ -33,6 +33,12 @@ struct FabrikOutput
     /** \brief Some sort of error */
     double target_ee_error;
 
+    /** \brief To track the error between the ee and target
+     * the first error is the initial one, between the ee at the initial configuration and the 
+     * given target
+     */
+    std::vector<double> target_ee_error_track;
+
     /** \brief Number of iterations */
     int final_iteration_num;
 

@@ -107,5 +107,6 @@ public:
 
 RobotModelPtr makeSimpleRobot2D();
 
+RobotModelPtr makeSimpleRobot3D();
 
 }
