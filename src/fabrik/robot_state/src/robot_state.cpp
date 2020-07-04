@@ -91,7 +91,7 @@ void RobotState::updateState(const double& joint_value, const int& joint_number)
         // joint_value is already in the opposite direction of the joint so we do not have to negate it.
         frames_[joint_number - 1].second = start_i * fabrik::rotation_z(joint_value);
         // s_i = e_i * inverse (relative transformation of link_i)
-        frames_[joint_number - 1].first = frames_[joint_number - 1].second * chain_[joint_number].getLinkFrame().inverse();
+        frames_[joint_number - 1].first = frames_[joint_number - 1].second * chain_[joint_number - 1].getLinkFrame().inverse();
 
         reached_at_ = joint_number - 1;
     }

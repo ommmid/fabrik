@@ -9,11 +9,13 @@
 
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/util/class_forward.h"
+#include "fabrik/util/output.h"
 
 namespace fabrik
 {  
 
 FABRIK_CLASS_FORWARD(Calculator);
+FABRIK_CLASS_FORWARD(PositionBasedCalculator);
 
 /** \brief This class includes the problem input, output and the solver
  */
@@ -50,6 +52,12 @@ public:
                           const Eigen::Affine3d& end_frame_reaching,
                           const Eigen::Affine3d& frame_aimed_at) override;
 
+    // all these vectors are expressed in world frame
+    Eigen::Vector3d start_to_aim;
+    Eigen::Vector3d start_to_aim_projected;
+    Eigen::Vector3d start_to_end;
+    Eigen::Vector3d start_to_end_projected;
+
 private:
 
 };
@@ -64,6 +72,7 @@ public:
     double calculateReach(const Eigen::Affine3d& start_frame_reaching,
                           const Eigen::Affine3d& end_frame_reaching,
                           const Eigen::Affine3d& frame_aimed_at) override;
+
 };
 
 class ComboCalculator : public Calculator
@@ -76,6 +85,7 @@ public:
     double calculateReach(const Eigen::Affine3d& start_frame_reaching,
                           const Eigen::Affine3d& end_frame_reaching,
                           const Eigen::Affine3d& frame_aimed_at) override;
+
 };
 
 }
