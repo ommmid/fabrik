@@ -10,6 +10,7 @@
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/util/class_forward.h"
 #include "fabrik/base/calculator.h"
+#include "fabrik/util/output.h"
 
 #include "fabrik/robot_state/robot_state.h"
 
@@ -23,31 +24,6 @@ enum CalculatorType
     POSITION,
     ORIENTATION,
     COMBINATION
-};
-
-struct FabrikOutput
-{
-    /** \brief Joints values at the solution */ 
-    std::vector<double> solution_joints_values;
-
-    /** \brief Some sort of error */
-    double target_ee_error;
-
-    /** \brief To track the error between the ee and target
-     * the first error is the initial one, between the ee at the initial configuration and the 
-     * given target
-     */
-    std::vector<double> target_ee_error_track;
-
-    /** \brief Number of iterations */
-    int final_iteration_num;
-
-    /** \brief a data structure to store all the frames in forward and backward reaching
-     * for all the iterations.
-     * each row (inner vector) is a "frames_" and the first row is backward reaching followed
-     * by a forward reaching in the second row. Obviously the last row is a forward reaching.
-     */
-    std::vector<std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>>> frames_matrix;
 };
 
 
@@ -91,9 +67,9 @@ CalculatorPtr calculator_;
 
 CalculatorPtr createCalculator(const CalculatorType& calculator_type);
 
-void backwardReaching();
+void backwardReaching(FabrikOutput& output);
 
-void forwardReaching();
+void forwardReaching(FabrikOutput& output);
 
 };
 

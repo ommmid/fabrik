@@ -14,6 +14,8 @@
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/robot_state/robot_state.h"
 
+#include "fabrik/util/output.h"
+
 #include "fabrik/base/calculator.h"
 #include "fabrik/base/fabrik.h"
 
