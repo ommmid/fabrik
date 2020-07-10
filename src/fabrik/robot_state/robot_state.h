@@ -31,12 +31,19 @@ FABRIK_CLASS_FORWARD(RobotState);
 class RobotState
 {
 public:
-    /** \brief Construct a state at a forward-completed home configuratn means:
-     * reached_at_ = dof
+    /** \brief Construct a state at a forward-completed home configuratn. It means:
+     * reached_at_ = dof - 1
      * reachin_direction_ = FORWARD
      * joint_values = set to zeros
      */
     RobotState(const RobotModelPtr& robot_model);
+
+    /** \brief Construct a state at a forward-completed by a given configuration. It means:
+     * reached_at_ = dof - 1
+     * reachin_direction_ = FORWARD
+     * joint_values = set to the given configuration
+     */
+    RobotState(const RobotModelPtr& robot_model, const std::vector<double>& given_configuration);
 
     // /** \brief Not sure if I need to create any other constructor
     //  */

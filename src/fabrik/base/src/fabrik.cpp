@@ -25,12 +25,15 @@ FABRIK::FABRIK( const RobotModelPtr& robot_model,
 initial_configuration_(initial_configuration), 
 target_(target), threshold_(threshold), requested_iteration_num_(requested_iteration_num)
 {
-    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model);
+    // We have a robot state internally
+//    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model);
+
+    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model, initial_configuration_);
 
     // set the state of the robot to the given initial_configuration
-    int dof = robot_model->getDOF();
-    for (int k = 0; k < dof; ++k)
-        robot_state_->updateState(initial_configuration_[k], k);
+    // int dof = robot_model->getDOF();
+    // for (int k = 0; k < dof; ++k)
+    //     robot_state_->updateState(initial_configuration_[k], k);
 
     // set the calculator 
     calculator_ = FABRIK::createCalculator(calculator_type);

@@ -34,6 +34,30 @@ robot_model_(robot_model)
     }
 }
 
+RobotState::RobotState(const RobotModelPtr& robot_model, const std::vector<double>& given_configuration):
+robot_model_(robot_model)
+{
+    base_ = robot_model_->getBase();
+    chain_ = robot_model_->getRobotChain();
+
+    reaching_direction_ = ReachingDirection::FORWARD;
+
+    dof_ = robot_model_->getDOF();
+    reached_at_ = dof_ - 1;
+    
+    joints_values_.resize(dof_);
+    frames_.resize(dof_);
+
+    // Set all the joint to zero and update the frames
+    for(int i = 0; i < dof_; ++i)
+    {
+        joints_values_[i] = given_configuration[i];
+        // frames number start from 0 
+        updateState(joints_values_[i], i);
+    }
+}
+
+
 void RobotState::updateState(Eigen::Affine3d target)
 {
     if(reaching_direction_ == ReachingDirection::FORWARD)
