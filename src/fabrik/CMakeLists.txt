@@ -22,7 +22,7 @@ install(TARGETS fabrik
 install(
     DIRECTORY fabrik/ 
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/fabrik"
-    COMPONENT fabrik
+    # COMPONENT fabrik
     FILES_MATCHING 
     PATTERN "*.h" 
     PATTERN ".DS_Store" EXCLUDE

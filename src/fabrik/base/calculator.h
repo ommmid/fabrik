@@ -13,9 +13,17 @@
 
 namespace fabrik
 {  
-
 FABRIK_CLASS_FORWARD(Calculator);
 FABRIK_CLASS_FORWARD(PositionBasedCalculator);
+
+
+enum CalculatorType
+{
+    POSITION,
+    ORIENTATION,
+    COMBINATION
+};
+
 
 /** \brief This class includes the problem input, output and the solver
  */

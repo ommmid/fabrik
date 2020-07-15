@@ -15,29 +15,46 @@
 namespace fabrik
 {
 
-// ------------------------- FABRIK -------------------------
-FABRIK::FABRIK( const RobotModelPtr& robot_model,
-                std::vector<double>& initial_configuration,
-                Eigen::Affine3d& target,
-                double threshold,
-                double requested_iteration_num,
-                CalculatorType calculator_type):
-initial_configuration_(initial_configuration), 
-target_(target), threshold_(threshold), requested_iteration_num_(requested_iteration_num)
+FABRIK::FABRIK( const RobotModelPtr& robot_model)
 {
     // We have a robot state internally
-//    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model);
+    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model); 
+}
 
-    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model, initial_configuration_);
-
+FABRIK::FABRIK( const RobotModelPtr& robot_model, const std::vector<double>& initial_configuration):
+initial_configuration_(initial_configuration)
+{
     // set the state of the robot to the given initial_configuration
-    // int dof = robot_model->getDOF();
-    // for (int k = 0; k < dof; ++k)
-    //     robot_state_->updateState(initial_configuration_[k], k);
+    robot_state_ = std::make_shared<fabrik::RobotState>(robot_model, initial_configuration_);
+}
+
+void FABRIK::setInverseKinematicsInput(const Eigen::Affine3d& target,
+                const double threshold,
+                const double requested_iteration_num,
+                const CalculatorType calculator_type)
+{
+    target_ = target;
+    threshold_ = threshold;
+    requested_iteration_num_ = requested_iteration_num;
 
     // set the calculator 
     calculator_ = FABRIK::createCalculator(calculator_type);
 }
+
+bool FABRIK::solveFK(const std::vector<double>& configuration, Eigen::Affine3d& target)
+{
+    // I have to make a new objecy with a new pointer. Getting a copy of "robot_state_" will make
+    // another shared pointer that is pointing to the same robot_state object and I do not want that.
+    // However, I can get some const information like robot_model and dof from any robot_state
+    fabrik::RobotStatePtr robot_state_fk = 
+            std::make_shared<fabrik::RobotState>(robot_state_->getRobotModel(), configuration);
+
+    int dof = robot_state_->getRobotModel()->getDOF();
+    target = robot_state_fk->getFrames(dof - 1).second;
+
+    return true;
+}
+
 
 CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
 {
@@ -55,11 +72,13 @@ CalculatorPtr FABRIK::createCalculator(const CalculatorType& calculator_type)
     }
 }
 
-bool FABRIK::solve(FabrikOutput& output)
+bool FABRIK::solveIK(IKOutput& output)
 {
 std::cout << "========================== sooooolllvvvvveeeeee ======================" << std::endl;
 std::cout << "======================================================================" << std::endl;
 std::cout << "======================================================================" << std::endl;
+
+// -------- check the input to see if they make sense
 
 int dof = robot_state_->getRobotModel()->getDOF();
 
@@ -105,7 +124,7 @@ output.target_ee_error = target_ee_error;
 return true;
 }
 
-void FABRIK::backwardReaching(FabrikOutput& output)
+void FABRIK::backwardReaching(IKOutput& output)
 {
     robot_state_->setReachingDirection(fabrik::ReachingDirection::BACKWARD);
     // set the last frame in frames_ to the target
@@ -171,7 +190,7 @@ void FABRIK::backwardReaching(FabrikOutput& output)
         std::cout << "angle: " << angle_vec[s] << std::endl;
 }
 
-void FABRIK::forwardReaching(FabrikOutput& output)
+void FABRIK::forwardReaching(IKOutput& output)
 {
     robot_state_->setReachingDirection(fabrik::ReachingDirection::FORWARD);
 

@@ -6,10 +6,25 @@
 #include <stdexcept>
 #include <string>
 
+#include "fabrik/base/calculator.h"
+
 namespace fabrik
 {
 
-struct FabrikOutput
+struct IKInput
+{
+    /** \brief Desired pose */ 
+    Eigen::Affine3d& target;
+
+    double threshold;
+    
+    double requested_iteration_num;
+    
+    CalculatorType calculator_type;
+};
+
+
+struct IKOutput
 {
     /** \brief Joints values at the solution */ 
     std::vector<double> solution_joints_values;
@@ -23,7 +38,17 @@ struct FabrikOutput
      */
     std::vector<double> target_ee_error_track;
 
-    // for debuggin purposes
+    /** \brief Number of iterations */
+    int final_iteration_num;
+
+    /** \brief a data structure to store all the frames in forward and backward reaching
+     * for all the iterations.
+     * each row (inner vector) is a "frames_" and the first row is backward reaching followed
+     * by a forward reaching in the second row. Obviously the last row is a forward reaching.
+     */
+    std::vector<std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>>> frames_matrix;
+
+    // ----------- for debuggin purposes
     // the first row is for backward reaching and has one less than dof element
     // the elements include the vector that connect the start to aim in world frame
     // the second row is for forward reaching and the number of elements are 
@@ -35,17 +60,8 @@ struct FabrikOutput
     std::vector<std::vector<Eigen::Vector3d>> start_to_end_projected_track;
 
     std::vector<std::vector<double>> angle_track;
-
-    /** \brief Number of iterations */
-    int final_iteration_num;
-
-    /** \brief a data structure to store all the frames in forward and backward reaching
-     * for all the iterations.
-     * each row (inner vector) is a "frames_" and the first row is backward reaching followed
-     * by a forward reaching in the second row. Obviously the last row is a forward reaching.
-     */
-    std::vector<std::vector<std::pair<Eigen::Affine3d, Eigen::Affine3d>>> frames_matrix;
 };
+
 
 
 }

@@ -79,19 +79,19 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
     double threshold = 0.01;
     double requested_iteration_num = 100;
 
-    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(robot_model,
-                                                fk_joints_values_1,
-                                                target,
-                                                threshold,
-                                                requested_iteration_num,
-                                                fabrik::CalculatorType::POSITION));
+    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(robot_model, fk_joints_values_1));
+
+    fabrik->setInverseKinematicsInput(target,
+                                     threshold,
+                                     requested_iteration_num,
+                                     fabrik::CalculatorType::POSITION);
     
-    fabrik::FabrikOutput output;
-    bool solved = fabrik->solve(output);
+    fabrik::IKOutput output;
+    bool solved = fabrik->solveIK(output);
 
     if(solved)
     {
-        std::cout << "solve was successful" << std::endl;
+        std::cout << "solveIK was successful" << std::endl;
         std::cout << "total iteration: " << output.final_iteration_num << std::endl;
         std::cout << "error: " << output.target_ee_error << std::endl;
     }

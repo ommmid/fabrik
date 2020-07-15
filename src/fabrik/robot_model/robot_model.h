@@ -61,7 +61,7 @@ protected:
 class RobotModel
 {
 public:
-    /** \brief Construct a Chaun by a series of Links relative transformation and assigns 
+    /** \brief Construct a Chain by a series of Links relative transformation and assigns 
      * default names to the links
      */
     RobotModel(const std::string& robot_name, const Eigen::Affine3d& base, const std::vector<Link>& chain);

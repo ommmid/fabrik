@@ -105,7 +105,7 @@ void RobotState::updateState(const double& joint_value, const int& joint_number)
             throw fabrik::Exception("joint number 0 can not be updated in backward reaching");
         }
 
-        // We assume the joint value found by the solve process is going to locate 
+        // We assume the joint value found by the solveIK process is going to locate 
         // e_{i-1} with respect to s_i which is in the opposite direction of the joint 
         joints_values_[joint_number] = -joint_value;
 
