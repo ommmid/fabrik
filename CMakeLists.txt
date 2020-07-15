@@ -48,8 +48,8 @@ include_directories(${FABRIK_INCLUDE_DIRS})
 
 # Generate a list of files and store them in variables FABRIK_SOURCE_CODE
 # and FABRIK_HEADERS for source and headers
-file(GLOB_RECURSE FABRIK_SOURCE_CODE src/fabrik/world/*.cpp src/fabrik/robot_model/*.cpp src/fabrik/robot_state/*.cpp src/fabrik/util/*.cpp src/fabrik/base/*.cpp)
-file(GLOB_RECURSE FABRIK_HEADERS src/fabrik/world/*.h src/fabrik/robot_model/*.h src/fabrik/robot_state/*.h src/fabrik/util/*.h src/fabrik/base/*.h)
+file(GLOB_RECURSE FABRIK_SOURCE_CODE src/fabrik/robot_model/*.cpp src/fabrik/robot_state/*.cpp src/fabrik/util/*.cpp src/fabrik/base/*.cpp)
+file(GLOB_RECURSE FABRIK_HEADERS src/fabrik/robot_model/*.h src/fabrik/robot_state/*.h src/fabrik/util/*.h src/fabrik/base/*.h)
 
 # put shared and static library in lib folder and executables in bin folder.
 # these must be set before add_library and add_executable
@@ -59,8 +59,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # make fabrik library here
 add_library(fabrik SHARED ${FABRIK_SOURCE_CODE})
-target_link_libraries(fabrik Eigen3::Eigen)
-
+# target_link_libraries(fabrik Eigen3::Eigen)
 
 
 # install the library

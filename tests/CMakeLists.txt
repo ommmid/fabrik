@@ -29,7 +29,6 @@ if (FABRIK_BUILD_TESTS)
     # add_definitions(-DTEST_RESOURCES_DIR=\"${TEST_RESOURCES_DIR}\")
 
     # Test code
-    add_fabrik_test(test_world world/world.cpp)
     add_fabrik_test(test_robot_model robot_model/robot_model.cpp)
     add_fabrik_test(test_robot_state robot_state/robot_state.cpp)
     add_fabrik_test(test_math util/math.cpp)

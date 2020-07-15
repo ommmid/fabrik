@@ -7,7 +7,7 @@ file(GLOB_RECURSE FABRIK_HEADERS world/*.h robot_model/*.h robot_state/*.h util/
 
 # make fabrik library here
 add_library(fabrik SHARED ${FABRIK_SOURCE_CODE})
-target_link_libraries(fabrik Eigen3::Eigen)
+# target_link_libraries(fabrik Eigen3::Eigen)
 
 
 # install the library
