@@ -6,7 +6,7 @@
 #include "fabrik/robot_state/robot_state.h"
 #include "fabrik/util/exception.h"
 #include "fabrik/util/math.h"
-#include "fabrik/util/output.h"
+#include "fabrik/util/io.h"
 
 #include "fabrik/base/calculator.h"
 

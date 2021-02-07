@@ -8,7 +8,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "fabrik/world/world.h"
 #include "fabrik/util/exception.h"
 #include "fabrik/robot_model/robot_model.h"
 

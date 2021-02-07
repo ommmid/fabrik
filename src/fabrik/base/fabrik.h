@@ -11,7 +11,6 @@
 #include "fabrik/util/class_forward.h"
 #include "fabrik/base/calculator.h"
 #include "fabrik/util/io.h"
-
 #include "fabrik/robot_state/robot_state.h"
 
 namespace fabrik

@@ -13,6 +13,7 @@
 
 const double ANGLE_TOLERANCE = 1e-6;
 
+
 BOOST_AUTO_TEST_CASE(Rotation_Z)
 {
     double theta = 0;

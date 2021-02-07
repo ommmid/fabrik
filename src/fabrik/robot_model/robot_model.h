@@ -109,4 +109,5 @@ RobotModelPtr makeSimpleRobot2D();
 
 RobotModelPtr makeSimpleRobot3D();
 
+RobotModelPtr makeLongRobot3D();
 }

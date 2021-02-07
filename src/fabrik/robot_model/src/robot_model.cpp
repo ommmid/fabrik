@@ -115,4 +115,30 @@ RobotModelPtr makeSimpleRobot3D()
     return robot_model;
 }
 
+RobotModelPtr makeLongRobot3D()
+{
+    std::string robot_name = "3D robot with 30 links";
+
+    Eigen::Vector3d vec0(0,0,1);;
+    vec0.normalize();
+    Eigen::Affine3d base(Eigen::AngleAxisd(0, vec0));
+    base.translation() = Eigen::Vector3d(0, 0, 0);
+    std::cout << "base_frame:\n" << base.matrix() << std::endl;
+
+    std::vector<fabrik::Link> chain;
+    for(int k = 0; k < 30; ++k)
+    {
+        Eigen::Vector3d vec = Eigen::Vector3d(1,2,3); vec.normalize();
+        Eigen::Affine3d link_frame(Eigen::AngleAxisd(0.2, vec));
+        Eigen::Vector3d trans =  Eigen::Vector3d(1,1,0.3); trans.normalize(); 
+        link_frame.translation() = trans;
+        fabrik::Link link("link",  link_frame);
+        
+        chain.push_back(link);
+    }
+  
+    fabrik::RobotModelPtr robot_model = std::make_shared<fabrik::RobotModel>(robot_name, base, chain);
+    return robot_model;
+}
+
 } // namespace fabrik

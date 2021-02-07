@@ -5,7 +5,7 @@ add_subdirectory(fabrik)
 # The directory structure is copied verbatim(word by word = exactly) to the destination
 install(
     DIRECTORY fabrik/
-    DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}
+    DESTINATION  "${CMAKE_INSTALL_INCLUDEDIR}/fabrik"
     COMPONENT fabrik
     FILES_MATCHING 
     PATTERN "*.h" 

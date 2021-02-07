@@ -8,13 +8,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "fabrik/world/world.h"
 #include "fabrik/util/exception.h"
 #include "fabrik/util/math.h"
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/robot_state/robot_state.h"
 
-#include "fabrik/util/output.h"
+#include "fabrik/util/io.h"
 
 #include "fabrik/base/calculator.h"
 #include "fabrik/base/fabrik.h"
@@ -97,9 +96,121 @@ BOOST_AUTO_TEST_CASE(FABRIK2D)
     }
 }
 
-BOOST_AUTO_TEST_CASE(FABRIK3D)
+BOOST_AUTO_TEST_CASE(ComparisonCase1)
 {
-   
+    fabrik::RobotModelPtr robot_model = fabrik::makeSimpleRobot3D();
 
+    // ----------------- state 1
+    fabrik::RobotStatePtr robot_state_1 = 
+        std::make_shared<fabrik::RobotState>(robot_model);
+    
+    robot_state_1->setReachingDirection(fabrik::ReachingDirection::FORWARD);
+    std::vector<double> fk_joints_values_1 = {0.1, 0.1, 0.1};
+    for (int k = 0; k < 3; ++k)
+        robot_state_1->updateState(fk_joints_values_1[k], k);
+
+    Eigen::Affine3d end_effector_1 = robot_state_1->getFrames(2).second;
+
+    // ----------------- state 2
+    fabrik::RobotStatePtr robot_state_2 = 
+        std::make_shared<fabrik::RobotState>(robot_model);
+    
+    robot_state_2->setReachingDirection(fabrik::ReachingDirection::FORWARD);
+    std::vector<double> fk_joints_values_2 = {0.4, 0.3, 0.2};
+    for (int k = 0; k < 3; ++k)
+        robot_state_2->updateState(fk_joints_values_2[k], k);
+
+    Eigen::Affine3d end_effector_2 = robot_state_2->getFrames(2).second;
+
+    // ----------------- solve IK
+    Eigen::Affine3d target = end_effector_2;
+    double threshold = 0.01;
+    double requested_iteration_num = 50;
+
+    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(robot_model, fk_joints_values_1));
+
+    fabrik->setInverseKinematicsInput(target,
+                                     threshold,
+                                     requested_iteration_num,
+                                     fabrik::CalculatorType::POSITION);
+    
+    fabrik::IKOutput output;
+    bool solved = fabrik->solveIK(output);
+
+    if(solved)
+    {
+        std::cout << "solveIK was successful" << std::endl;
+        std::cout << "total iteration: " << output.final_iteration_num << std::endl;
+        std::cout << "error: " << output.target_ee_error << std::endl;
+        
+        std::cout << "joint values: " << output.solution_joints_values[0] << "   "
+            << output.solution_joints_values[1] << "   " << output.solution_joints_values[2] << std::endl;
+
+        std::cout << "\nthe target was:\n" << end_effector_2.matrix() << std::endl; 
+        std::cout << "\nend effector is at:\n" << output.frames_matrix.back().back().second.matrix() << std::endl; 
+    }
 }
 
+// long chain
+BOOST_AUTO_TEST_CASE(ComparisonCase2)
+{
+    fabrik::RobotModelPtr robot_model = fabrik::makeLongRobot3D();
+
+    // ----------------- state 1
+    fabrik::RobotStatePtr robot_state_1 = 
+        std::make_shared<fabrik::RobotState>(robot_model);
+    
+    robot_state_1->setReachingDirection(fabrik::ReachingDirection::FORWARD);
+
+    std::vector<double> fk_joints_values_1;
+    for (int k = 0; k < 30; ++k)
+        fk_joints_values_1.push_back(0.05);
+
+    for (int k = 0; k < 30; ++k)
+        robot_state_1->updateState(fk_joints_values_1[k], k);
+
+    Eigen::Affine3d end_effector_1 = robot_state_1->getFrames(2).second;
+
+    // ----------------- state 2
+    fabrik::RobotStatePtr robot_state_2 = 
+        std::make_shared<fabrik::RobotState>(robot_model);
+    
+    robot_state_2->setReachingDirection(fabrik::ReachingDirection::FORWARD);
+
+    std::vector<double> fk_joints_values_2;
+    for (int k = 0; k < 30; ++k)
+        fk_joints_values_2.push_back(k / 10);
+
+    for (int k = 0; k < 30; ++k)
+        robot_state_2->updateState(fk_joints_values_2[k], k);
+
+    Eigen::Affine3d end_effector_2 = robot_state_2->getFrames(2).second;
+
+    // ----------------- solve IK
+    Eigen::Affine3d target = end_effector_2;
+    double threshold = 0.01;
+    double requested_iteration_num = 1000;
+
+    fabrik::FABRIKPtr fabrik(new fabrik::FABRIK(robot_model, fk_joints_values_1));
+
+    fabrik->setInverseKinematicsInput(target,
+                                     threshold,
+                                     requested_iteration_num,
+                                     fabrik::CalculatorType::POSITION);
+    
+    fabrik::IKOutput output;
+    bool solved = fabrik->solveIK(output);
+
+    if(solved)
+    {
+        std::cout << "solveIK was successful" << std::endl;
+        std::cout << "total iteration: " << output.final_iteration_num << std::endl;
+        std::cout << "error: " << output.target_ee_error << std::endl;
+        
+        std::cout << "joint values: " << output.solution_joints_values[0] << "   "
+            << output.solution_joints_values[1] << "   " << output.solution_joints_values[2] << std::endl;
+
+        std::cout << "\nthe target was:\n" << end_effector_2.matrix() << std::endl; 
+        std::cout << "\nend effector is at:\n" << output.frames_matrix.back().back().second.matrix() << std::endl; 
+    }
+}

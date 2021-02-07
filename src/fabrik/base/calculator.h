@@ -9,7 +9,6 @@
 
 #include "fabrik/robot_model/robot_model.h"
 #include "fabrik/util/class_forward.h"
-#include "fabrik/util/output.h"
 
 namespace fabrik
 {  
